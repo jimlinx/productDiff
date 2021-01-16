@@ -8,12 +8,6 @@ use DateTime;
 
 class Util
 {
-    public static function println($msg)
-    {
-        echo $msg . "\n";
-    }
-
-
     public static function trimImgUrl($url)
     {
         $regex = "!" . ".*\/(.*)" . "!";

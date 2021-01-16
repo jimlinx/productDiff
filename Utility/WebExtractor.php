@@ -15,7 +15,7 @@ class WebExtractor
     {
         $saveDir = Util::createDir($saveDir);
 
-        if($url == '') {
+        if ($url == '') {
             echo "No image\n";
             return;
         }
@@ -32,10 +32,10 @@ class WebExtractor
     {
         $total = count($parsed);
         $index = 1;
-        foreach($parsed as $key => $entry) {
+        foreach ($parsed as $key => $entry) {
             echo "Processing [$index out of $total][" . $key . "]\n";
-            foreach($entry['images'] as $imageUrl) {
-                foreach($entry['saveDir'] as $dir) {
+            foreach ($entry['images'] as $imageUrl) {
+                foreach ($entry['saveDir'] as $dir) {
                     self::saveUrlImage($dir, trim($imageUrl));
                 }
             }
