@@ -10,7 +10,8 @@ main();
 
 
 function main() {
-    Parser::compareData();
+//    Parser::compareData();
+    downloadImages();
 }
 
 

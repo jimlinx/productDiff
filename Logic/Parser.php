@@ -71,7 +71,7 @@ class Parser
             if($row['sku'] == '') {
                 $saveDirs = [];
                 foreach($parents[$row['parent']] as $category)
-                    $saveDirs[] = $category . $row['parent'];
+                    $saveDirs[] = $category . "[" . $row['parent'] . "]" . $row['parent'];
 
                 $parsed[$row['id']] = [
                     'saveDir' => $saveDirs,
