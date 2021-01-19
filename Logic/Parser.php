@@ -70,8 +70,10 @@ class Parser
             # Parent
             if($row['sku'] == '') {
                 $saveDirs = [];
-                foreach($parents[$row['parent']] as $category)
-                    $saveDirs[] = $category . "[" . $row['parent'] . "]" . $row['parent'];
+                foreach($parents[$row['parent']] as $category) {
+                    $escapedParent = str_replace('/', '_', $row['parent']);
+                    $saveDirs[] = $category . "[" . $escapedParent . "]" . $escapedParent;
+                }
 
                 $parsed[$row['id']] = [
                     'saveDir' => $saveDirs,
@@ -82,8 +84,11 @@ class Parser
             # Non-Parent
             if($row['sku'] != '') {
                 $saveDirs = [];
-                foreach($parents[$row['parent']] as $category)
-                    $saveDirs[] = $category . "[" . $row['parent'] . "]" . $row['sku'];
+                foreach($parents[$row['parent']] as $category) {
+                    $escapedParent = str_replace('/', '_', $row['parent']);
+                    $escapedSku = str_replace('/', '_', $row['sku']);
+                    $saveDirs[] = $category . "[" . $escapedParent . "]" . $escapedSku;
+                }
 
                 $parsed[$row['id']] = [
                     'saveDir' => $saveDirs,
@@ -99,8 +104,10 @@ class Parser
 
             $categories = self::parseCategories($row['categories']);
             $saveDirs = [];
-            foreach($categories as $category)
-                $saveDirs[] = $category . $row['sku'];
+            foreach($categories as $category) {
+                $escapedSku = str_replace('/', '_', $row['sku']);
+                $saveDirs[] = $category . $escapedSku;
+            }
 
             $parsed[$row['id']] = [
                 'saveDir' => $saveDirs,
