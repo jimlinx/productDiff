@@ -40,7 +40,7 @@ class Util
             if($trimmed == '')
                 unset($imagesArray[$key]);
             else
-                $imagesArray[$key] = $trimmed;
+                $imagesArray[$key] = strtoupper($trimmed);
         }
         return $imagesArray;
     }

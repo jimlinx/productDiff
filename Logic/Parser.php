@@ -276,10 +276,11 @@ class Parser
         $csvImages = [];
         foreach($csv as $row) {
             $sku = $row[2];
+            $image = strtoupper($row[0]);
             if(array_key_exists($sku, $csvImages)) {
-                array_push($csvImages[$sku], $row[0]);
+                array_push($csvImages[$sku], $image);
             } else
-                $csvImages[$sku] = [$row[0]];
+                $csvImages[$sku] = [$image];
         }
 
         unset($csvImages['Folder Path']);
