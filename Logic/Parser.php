@@ -82,6 +82,11 @@ class Parser
                     'saveDir' => $saveDirs,
                     'images' => $row['images']
                 ];
+
+                if(array_key_exists($escapedParent, $skuImages)) {
+                    array_push($skuImages[$escapedParent], Util::trimImagesArray($row['images']));
+                } else
+                    $skuImages[$escapedParent] = Util::trimImagesArray($row['images']);
             }
 
             # Non-Parent
