@@ -62,16 +62,19 @@ class Parser
         }
 
         # Process Variations
+        $skuImages = [];
         $parsed = [];
         foreach($csvRaw as $row) {
             if($row['type'] != 'variation')
                 continue;
 
+            $escapedSku = str_replace('/', '_', $row['sku']);
+            $escapedParent = str_replace('/', '_', $row['parent']);
+
             # Parent
             if($row['sku'] == '') {
                 $saveDirs = [];
                 foreach($parents[$row['parent']] as $category) {
-                    $escapedParent = str_replace('/', '_', $row['parent']);
                     $saveDirs[] = $category . "[" . $escapedParent . "]" . $escapedParent;
                 }
 
@@ -85,8 +88,6 @@ class Parser
             if($row['sku'] != '') {
                 $saveDirs = [];
                 foreach($parents[$row['parent']] as $category) {
-                    $escapedParent = str_replace('/', '_', $row['parent']);
-                    $escapedSku = str_replace('/', '_', $row['sku']);
                     $saveDirs[] = $category . "[" . $escapedParent . "]" . $escapedSku;
                 }
 
@@ -94,6 +95,11 @@ class Parser
                     'saveDir' => $saveDirs,
                     'images' => $row['images']
                 ];
+
+                if(array_key_exists($escapedSku, $skuImages)) {
+                    array_push($skuImages[$escapedSku], Util::trimImagesArray($row['images']));
+                } else
+                    $skuImages[$escapedSku] = Util::trimImagesArray($row['images']);
             }
         }
 
@@ -102,10 +108,10 @@ class Parser
             if($row['type'] != 'simple')
                 continue;
 
+            $escapedSku = str_replace('/', '_', $row['sku']);
             $categories = self::parseCategories($row['categories']);
             $saveDirs = [];
             foreach($categories as $category) {
-                $escapedSku = str_replace('/', '_', $row['sku']);
                 $saveDirs[] = $category . $escapedSku;
             }
 
@@ -113,9 +119,18 @@ class Parser
                 'saveDir' => $saveDirs,
                 'images' => $row['images']
             ];
+
+            if(array_key_exists($escapedSku, $skuImages)) {
+                array_push($skuImages[$escapedSku], Util::trimImagesArray($row['images']));
+            } else
+                $skuImages[$escapedSku] = Util::trimImagesArray($row['images']);
+
         }
 
-        return $parsed;
+        return [
+            'parsed' => $parsed,
+            'skuImages' => $skuImages
+        ];
     }
 
 
@@ -245,6 +260,39 @@ class Parser
         foreach($includeToRemove as $key => $entry) {
             if(!empty($entry))
                 echo "To Remove [$key] => " . json_encode($entry) . "\n";
+        }
+    }
+
+
+    public static function findMissingSkuImage($skuImages, $csvPath)
+    {
+        $csv = FileReader::readCSV($csvPath, true);
+
+        $csvImages = [];
+        foreach($csv as $row) {
+            $sku = $row[2];
+            if(array_key_exists($sku, $csvImages)) {
+                array_push($csvImages[$sku], $row[0]);
+            } else
+                $csvImages[$sku] = [$row[0]];
+        }
+
+        unset($csvImages['Folder Path']);
+        echo "\nImages to check\n";
+        echo "\n" . json_encode($csvImages, JSON_UNESCAPED_SLASHES) . "\n";
+
+
+        foreach($csvImages as $sku => $images) {
+            if(!array_key_exists($sku, $skuImages)) {
+                echo "SKU not found [$sku]\n";
+                continue;
+            }
+
+            foreach($images as $image) {
+                if(!in_array($image, $skuImages[$sku])) {
+                    echo "Missing Image [SKU: $sku][$image]\n";
+                }
+            }
         }
     }
 }

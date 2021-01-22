@@ -31,4 +31,17 @@ class Util
         $duration = $startTime->diff(new DateTime());
         return $duration->i . "min " . $duration->s . "sec";
     }
+
+
+    public static function trimImagesArray($imagesArray)
+    {
+        foreach($imagesArray as $key => $url) {
+            $trimmed = Util::trimImgUrl($url);
+            if($trimmed == '')
+                unset($imagesArray[$key]);
+            else
+                $imagesArray[$key] = $trimmed;
+        }
+        return $imagesArray;
+    }
 }
